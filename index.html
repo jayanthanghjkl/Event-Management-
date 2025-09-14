@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventFlow - Professional Event Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo {
+            color: #667eea;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 8px 15px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #c82333;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .dashboard-title {
+            color: #333;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .section-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .event-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            margin: 10px 0;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .event-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-name {
+            font-weight: 500;
+            color: #333;
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .empty-state {
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .add-event-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-badge {
+            background: #28a745;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 2em;
+            }
+            
+            .topbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="container" id="loginPage">
+        <div class="logo">EventFlow</div>
+        <div class="subtitle">Event Management System</div>
+        
+        <div class="form-group">
+            <label for="role">Select Role</label>
+            <select id="role">
+                <option value="guest" disabled selected>Select your role</option>
+                <option value="user">Attendee</option>
+                <option value="admin">Administrator</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password">
+        </div>
+        
+        <button class="btn-primary" onclick="authenticateUser()">Login</button>
+    </div>
+
+    <!-- User Dashboard -->
+    <div class="container hidden" id="userDashboard">
+        <div class="topbar">
+            <div>
+                <div class="dashboard-title">Welcome, <span id="userDisplayName"></span></div>
+                <span class="role-badge">Attendee</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <h3 class="section-title">Available Events</h3>
+        <ul class="event-list" id="eventList"></ul>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="container hidden" id="adminDashboard">
+        <div class="topbar">
+            <div>
+                <div class="dashboard-title">Admin Panel - <span id="adminDisplayName"></span></div>
+                <span class="role-badge admin-badge">Administrator</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="add-event-section">
+            <h3 class="section-title">Create New Event</h3>
+            <div class="form-group">
+                <label for="eventName">Event Name</label>
+                <input type="text" id="eventName" placeholder="Enter event name">
+                <label for="eventDate">Event Date</label>
+                <input type="date" id="eventdate" placeholder="Enter event date">
+            </div>
+            <button class="btn-primary" onclick="addEvent()">Create Event</button>
+        </div>
+        
+        <h3 class="section-title">Manage Events</h3>
+        <ul class="event-list" id="adminEventList"></ul>
+    </div>
+
+    <script>
+        // Initialize events array (using in-memory storage instead of localStorage)
+        let events = [];
+        let currentUser = null;
+
+        function authenticateUser() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const role = document.getElementById("role").value;
+
+            if (!username || !password) {
+                alert("Please enter both username and password.");
+                return;
+            }
+
+            // Set current user
+            currentUser = {
+                username: username,
+                role: role
+            };
+
+            // Hide login page and show appropriate dashboard
+            document.getElementById("loginPage").classList.add("hidden");
+
+            if (role === "guest") {
+                alert("Please select a valid role.");
+                document.getElementById("loginPage").classList.remove("hidden");
+                return;
+            }
+            if (role === "admin") {
+                document.getElementById("adminDashboard").classList.remove("hidden");
+                document.getElementById("adminDisplayName").textContent = username;
+                displayAdminEvents();
+            } else {
+                document.getElementById("userDashboard").classList.remove("hidden");
+                document.getElementById("userDisplayName").textContent = username;
+                displayUserEvents();
+            }
+
+            // Clear input fields
+            clearLoginFields();
+        }
+
+        function logout() {
+            // Show login page and hide dashboards
+            document.getElementById("loginPage").classList.remove("hidden");
+            document.getElementById("userDashboard").classList.add("hidden");
+            document.getElementById("adminDashboard").classList.add("hidden");
+            
+            // Clear current user
+            currentUser = null;
+            
+            // Clear input fields
+            clearLoginFields();
+        }
+
+        function clearLoginFields() {
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+            document.getElementById("role").value = "user";
+        }
+
+        function addEvent() {
+            const eventName = document.getElementById("eventName").value.trim();
+            const eventDate = document.getElementById("eventdate").value.trim();
+            
+            if (!eventName) {
+                alert("Please enter an event name.");
+                return;
+            }
+
+            if (!eventDate) {
+                alert("Please enter an event date.");
+                return;
+            }
+
+            // Check for duplicate events
+            const eventExists = events.some(event => event.name === eventName);
+            if (eventExists) {
+                alert("This event already exists. Please choose a different name.");
+                return;
+            }
+
+            events.push({name: eventName, date: eventDate});
+            displayAdminEvents();
+            displayUserEvents(); // Update user view if open
+            
+            // Clear input field
+            document.getElementById("eventName").value = "";
+            document.getElementById("eventdate").value = "";
+            
+            // Show success feedback
+            showNotification("Event created successfully!");
+        }
+
+        function displayAdminEvents() {
+            const list = document.getElementById("adminEventList");
+            
+            if (events.length === 0) {
+                list.innerHTML = '<div class="empty-state">No events created yet. Create your first event above!</div>';
+                return;
+            }
+            
+            list.innerHTML = "";
+            events.forEach((event, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'event-item';
+                listItem.innerHTML = `
+                    <span class="event-name">${escapeHtml(event.name)}, ${escapeHtml(event.date)}</span>
+                    
+                    <button class="btn-secondary" onclick="deleteEvent(${index})" title="Delete Event">
+                        Delete
+                    </button>
+                `;
+                list.appendChild(listItem);
+            });
+        }
+
+        function displayUserEvents() {
+            const list = document.getElementById("eventList");
+            
+            if (events.length === 0) {
+                list.innerHTML = '<div class="empty-state">No events available at the moment. Please check back later!</div>';
+                return;
+            }
+            
+            list.innerHTML = "";
+            events.forEach((event) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'event-item';
+                listItem.innerHTML = `<span class="event-name">${escapeHtml(event.name)}, ${escapeHtml(event.date)}</span>`;
+                list.appendChild(listItem);
+            });
+        }
+
+        function deleteEvent(index) {
+            if (confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
+                const deletedEvent = events[index];
+                events.splice(index, 1);
+                displayAdminEvents();
+                displayUserEvents(); // Update user view if open
+                showNotification(`Event "${deletedEvent.name}" has been deleted.`);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showNotification(message) {
+            // Simple notification system
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: 500;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add enter key support for login
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    authenticateUser();
+                }
+            });
+            
+            // Add enter key support for event creation
+            document.getElementById('eventName').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addEvent();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
