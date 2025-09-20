@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EventFlow - Professional Event Management</title>
+    <title>TaskFlow - Professional Task Management</title>
     <link href="https://raw.githubusercontent.com/jayanthanghjkl/Event-Management-/refs/heads/main/event-management_11827065.png" rel="icon">
     <style>
         * {
@@ -15,11 +15,14 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #fa9b1e 0%, #f3632a 100%);
+            background-size: cover;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            flex-wrap: wrap;
+            gap: 20px;   
         }
 
         .container {
@@ -32,6 +35,7 @@
             max-width: 450px;
             text-align: center;
             transition: all 0.3s ease;
+            flex: 1 1 400px;
         }
 
         .container:hover {
@@ -84,7 +88,7 @@
         input:focus, select:focus {
             outline: none;
             border-color: #ffa33a;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 163, 58, 0.1);
             transform: translateY(-2px);
         }
 
@@ -104,7 +108,7 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(255, 173, 66, 0.3);
         }
 
         .btn-secondary {
@@ -121,41 +125,6 @@
 
         .btn-secondary:hover {
             background: #c82333;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .dashboard-title {
-            color: #333;
-            font-size: 1.8em;
-            font-weight: 600;
-        }
-
-        .logout-btn {
-            background: none;
-            border: 2px solid #ffaa3a;
-            color: #ffbb3d;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #ff9f22;
-            color: white;
         }
 
         .section-title {
@@ -208,303 +177,309 @@
         .add-event-section {
             margin-bottom: 30px;
             padding: 20px;
-            background: rgba(102, 126, 234, 0.05);
+            background: rgba(255, 173, 66, 0.05);
             border-radius: 15px;
-            border: 1px solid rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(255, 173, 66, 0.1);
         }
 
-        .role-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            background: #fdb01f;
-            color: white;
+        .edit-event-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 173, 66, 0.05);
             border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 173, 66, 0.1);
         }
 
-        .admin-badge {
-            background: #28a745;
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .container {
+                max-width: 100%;
+                margin-bottom: 20px;
+            }
         }
 
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
             }
-            
-            .logo {
-                font-size: 2em;
-            }
-            
-            .topbar {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Login Page -->
-    <div class="container" id="loginPage">
-        <div class="logo">EventFlow</div>
-        <div class="subtitle">Event Management System</div>
-        
-        <div class="form-group">
-            <label for="role">Select Role</label>
-            <select id="role">
-                <option value="guest" disabled selected>Select your role</option>
-                <option value="user">Attendee</option>
-                <option value="admin">Administrator</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" placeholder="Enter your username">
-        </div>
-        
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Enter your password">
-        </div>
-        
-        <button class="btn-primary" onclick="authenticateUser()">Login</button>
-    </div>
+    <!-- Create Task Container -->
+    <div class="container">
+        <div class="logo">TaskFlow</div>
+        <div class="subtitle">Task Management System</div>
 
-    <!-- User Dashboard -->
-    <div class="container hidden" id="userDashboard">
-        <div class="topbar">
-            <div>
-                <div class="dashboard-title">Welcome, <span id="userDisplayName"></span></div>
-                <span class="role-badge">Attendee</span>
-            </div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
-        
-        <h3 class="section-title">Available Events</h3>
-        <ul class="event-list" id="eventList"></ul>
-    </div>
-
-    <!-- Admin Dashboard -->
-    <div class="container hidden" id="adminDashboard">
-        <div class="topbar">
-            <div>
-                <div class="dashboard-title">Admin Panel - <span id="adminDisplayName"></span></div>
-                <span class="role-badge admin-badge">Administrator</span>
-            </div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
-        
         <div class="add-event-section">
-            <h3 class="section-title">Create New Event</h3>
+            <h3 class="section-title">Create New Task</h3>
             <div class="form-group">
-                <label for="eventName">Event Name</label>
-                <input type="text" id="eventName" placeholder="Enter event name">
-                <label for="eventDate">Event Date</label>
-                <input type="date" id="eventdate" placeholder="Enter event date">
+                <label for="taskName">Task Name</label>
+                <input type="text" id="taskName" placeholder="Enter task name">
             </div>
-            <button class="btn-primary" onclick="addEvent()">Create Event</button>
+            <div class="form-group">
+                <label for="taskDate">Scheduled Date</label>
+                <input type="date" id="taskDate" placeholder="Enter scheduled date">
+            </div>
+            <button class="btn-primary" onclick="addTask()">Create Task</button>
         </div>
+    </div>    
+
+    <!-- Manage Tasks Container -->
+    <div class="container">
+        <div class="subtitle">Manage Tasks</div>
         
-        <h3 class="section-title">Manage Events</h3>
-        <ul class="event-list" id="adminEventList"></ul>
+        <div class="edit-event-section">
+            <h3 class="section-title">Task List</h3>
+            <ul class="event-list" id="adminTaskList"></ul>
+        </div>
     </div>
 
-    <script>
-        // Initialize events array (using in-memory storage instead of localStorage)
-        let events = [];
-        let currentUser = null;
-
-        function authenticateUser() {
-            const username = document.getElementById("username").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const role = document.getElementById("role").value;
-
-            if (!username || !password) {
-                alert("Please enter both username and password.");
-                return;
-            }
-
-            // Set current user
-            currentUser = {
-                username: username,
-                role: role
-            };
-
-            // Hide login page and show appropriate dashboard
-            document.getElementById("loginPage").classList.add("hidden");
-
-            if (role === "guest") {
-                alert("Please select a valid role.");
-                document.getElementById("loginPage").classList.remove("hidden");
-                return;
-            }
-            if (role === "admin") {
-                document.getElementById("adminDashboard").classList.remove("hidden");
-                document.getElementById("adminDisplayName").textContent = username;
-                displayAdminEvents();
-            } else {
-                document.getElementById("userDashboard").classList.remove("hidden");
-                document.getElementById("userDisplayName").textContent = username;
-                displayUserEvents();
-            }
-
-            // Clear input fields
-            clearLoginFields();
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/5.2.2/typescript.min.js"></script>
+    <script type="text/typescript">
+        // Define TypeScript interfaces
+        interface Task {
+            id: number;
+            name: string;
+            date: string;
+            createdAt: Date;
+            completed?: boolean;
         }
 
-        function logout() {
-            // Show login page and hide dashboards
-            document.getElementById("loginPage").classList.remove("hidden");
-            document.getElementById("userDashboard").classList.add("hidden");
-            document.getElementById("adminDashboard").classList.add("hidden");
-            
-            // Clear current user
-            currentUser = null;
-            
-            // Clear input fields
-            clearLoginFields();
+        interface TaskManager {
+            tasks: Task[];
+            currentUser: string | null;
+            nextId: number;
         }
 
-        function clearLoginFields() {
-            document.getElementById("username").value = "";
-            document.getElementById("password").value = "";
-            document.getElementById("role").value = "user";
-        }
+        // Initialize task manager with proper typing
+        class TaskFlowApp implements TaskManager {
+            public tasks: Task[] = [];
+            public currentUser: string | null = null;
+            public nextId: number = 1;
 
-        function addEvent() {
-            const eventName = document.getElementById("eventName").value.trim();
-            const eventDate = document.getElementById("eventdate").value.trim();
-            
-            if (!eventName) {
-                alert("Please enter an event name.");
-                return;
+            constructor() {
+                this.initializeApp();
             }
 
-            if (!eventDate) {
-                alert("Please enter an event date.");
-                return;
+            // Add task with proper type checking
+            public addTask(): void {
+                const taskNameElement = document.getElementById("taskName") as HTMLInputElement;
+                const taskDateElement = document.getElementById("taskDate") as HTMLInputElement;
+                
+                if (!taskNameElement || !taskDateElement) {
+                    console.error("Required elements not found");
+                    return;
+                }
+
+                const taskName: string = taskNameElement.value.trim();
+                const taskDate: string = taskDateElement.value.trim();
+                
+                // Validate inputs
+                if (!this.validateTaskInput(taskName, taskDate)) {
+                    return;
+                }
+
+                // Check for duplicate tasks
+                if (this.isDuplicateTask(taskName)) {
+                    alert("This task already exists. Please choose a different name.");
+                    return;
+                }
+
+                // Create new task
+                const newTask: Task = {
+                    id: this.nextId++,
+                    name: taskName,
+                    date: taskDate,
+                    createdAt: new Date(),
+                    completed: false
+                };
+
+                this.tasks.push(newTask);
+                this.displayTasks();
+                this.clearInputFields();
             }
 
-            // Check for duplicate events
-            const eventExists = events.some(event => event.name === eventName);
-            if (eventExists) {
-                alert("This event already exists. Please choose a different name.");
-                return;
+            // Validate task input with type safety
+            private validateTaskInput(name: string, date: string): boolean {
+                if (!name) {
+                    alert("Please enter a task name.");
+                    return false;
+                }
+
+                if (!date) {
+                    alert("Please enter a scheduled date.");
+                    return false;
+                }
+
+                // Additional date validation
+                const selectedDate = new Date(date);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (selectedDate < today) {
+                    const confirmPast = confirm("The selected date is in the past. Do you want to continue?");
+                    return confirmPast;
+                }
+
+                return true;
             }
 
-            events.push({name: eventName, date: eventDate});
-            displayAdminEvents();
-            displayUserEvents(); // Update user view if open
-            
-            // Clear input field
-            document.getElementById("eventName").value = "";
-            document.getElementById("eventdate").value = "";
-            
-            // Show success feedback
-            showNotification("Event created successfully!");
-        }
-
-        function displayAdminEvents() {
-            const list = document.getElementById("adminEventList");
-            
-            if (events.length === 0) {
-                list.innerHTML = '<div class="empty-state">No events created yet. Create your first event above!</div>';
-                return;
+            // Check for duplicate tasks
+            private isDuplicateTask(name: string): boolean {
+                return this.tasks.some((task: Task) => task.name.toLowerCase() === name.toLowerCase());
             }
-            
-            list.innerHTML = "";
-            events.forEach((event, index) => {
-                const listItem = document.createElement('li');
-                listItem.className = 'event-item';
-                listItem.innerHTML = `
-                    <span class="event-name">${escapeHtml(event.name)}, ${escapeHtml(event.date)}</span>
+
+            // Display tasks with proper DOM manipulation
+            public displayTasks(): void {
+                const listElement = document.getElementById("adminTaskList") as HTMLUListElement;
+                
+                if (!listElement) {
+                    console.error("Task list element not found");
+                    return;
+                }
+                
+                if (this.tasks.length === 0) {
+                    listElement.innerHTML = '<div class="empty-state">No tasks created yet. Create your first task!</div>';
+                    return;
+                }
+                
+                listElement.innerHTML = "";
+                
+                // Sort tasks by date
+                const sortedTasks: Task[] = [...this.tasks].sort((a, b) => 
+                    new Date(a.date).getTime() - new Date(b.date).getTime()
+                );
+
+                sortedTasks.forEach((task: Task) => {
+                    const listItem: HTMLLIElement = document.createElement('li');
+                    listItem.className = 'event-item';
                     
-                    <button class="btn-secondary" onclick="deleteEvent(${index})" title="Delete Event">
-                        Delete
-                    </button>
-                `;
-                list.appendChild(listItem);
-            });
-        }
-
-        function displayUserEvents() {
-            const list = document.getElementById("eventList");
-            
-            if (events.length === 0) {
-                list.innerHTML = '<div class="empty-state">No events available at the moment. Please check back later!</div>';
-                return;
+                    const formattedDate = this.formatDate(task.date);
+                    const isOverdue = this.isTaskOverdue(task.date);
+                    const overdueClass = isOverdue ? ' style="color: #dc3545;"' : '';
+                    
+                    listItem.innerHTML = `
+                        <span class="event-name"${overdueClass}>
+                            ${this.escapeHtml(task.name)} - ${formattedDate}
+                            ${isOverdue ? ' (Overdue)' : ''}
+                        </span>
+                        <button class="btn-secondary" onclick="app.deleteTask(${task.id})" title="Delete Task">
+                            Delete
+                        </button>
+                    `;
+                    listElement.appendChild(listItem);
+                });
             }
-            
-            list.innerHTML = "";
-            events.forEach((event) => {
-                const listItem = document.createElement('li');
-                listItem.className = 'event-item';
-                listItem.innerHTML = `<span class="event-name">${escapeHtml(event.name)}, ${escapeHtml(event.date)}</span>`;
-                list.appendChild(listItem);
-            });
-        }
 
-        function deleteEvent(index) {
-            if (confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
-                const deletedEvent = events[index];
-                events.splice(index, 1);
-                displayAdminEvents();
-                displayUserEvents(); // Update user view if open
-                showNotification(`Event "${deletedEvent.name}" has been deleted.`);
+            // Delete task with confirmation
+            public deleteTask(taskId: number): void {
+                const task = this.tasks.find((t: Task) => t.id === taskId);
+                
+                if (!task) {
+                    alert("Task not found.");
+                    return;
+                }
+
+                if (confirm(`Are you sure you want to delete "${task.name}"? This action cannot be undone.`)) {
+                    this.tasks = this.tasks.filter((t: Task) => t.id !== taskId);
+                    this.displayTasks();
+                }
             }
-        }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+            // Utility method to format date
+            private formatDate(dateString: string): string {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
 
-        function showNotification(message) {
-            // Simple notification system
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #28a745;
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                z-index: 1000;
-                font-weight: 500;
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+            // Check if task is overdue
+            private isTaskOverdue(dateString: string): boolean {
+                const taskDate = new Date(dateString);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                taskDate.setHours(0, 0, 0, 0);
+                
+                return taskDate < today;
+            }
+
+            // Clear input fields
+            private clearInputFields(): void {
+                const taskNameElement = document.getElementById("taskName") as HTMLInputElement;
+                const taskDateElement = document.getElementById("taskDate") as HTMLInputElement;
+                
+                if (taskNameElement) taskNameElement.value = "";
+                if (taskDateElement) taskDateElement.value = "";
+            }
+
+            // Escape HTML for security
+            private escapeHtml(text: string): string {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Initialize event listeners
+            private initializeApp(): void {
+                document.addEventListener('DOMContentLoaded', () => {
+                    this.displayTasks();
+                    this.setupEventListeners();
+                });
+            }
+
+            // Setup event listeners with proper typing
+            private setupEventListeners(): void {
+                const taskNameElement = document.getElementById('taskName') as HTMLInputElement;
+                const taskDateElement = document.getElementById('taskDate') as HTMLInputElement;
+                
+                if (taskNameElement) {
+                    taskNameElement.addEventListener('keypress', (e: KeyboardEvent) => {
+                        if (e.key === 'Enter') {
+                            this.addTask();
+                        }
+                    });
+                }
+                
+                if (taskDateElement) {
+                    taskDateElement.addEventListener('keypress', (e: KeyboardEvent) => {
+                        if (e.key === 'Enter') {
+                            this.addTask();
+                        }
+                    });
+                }
+            }
+
+            // Get task statistics
+            public getTaskStats(): { total: number; overdue: number; upcoming: number } {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                return {
+                    total: this.tasks.length,
+                    overdue: this.tasks.filter(task => new Date(task.date) < today).length,
+                    upcoming: this.tasks.filter(task => new Date(task.date) >= today).length
+                };
+            }
         }
 
         // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add enter key support for login
-            document.getElementById('password').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    authenticateUser();
-                }
-            });
-            
-            // Add enter key support for event creation
-            document.getElementById('eventName').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    addEvent();
-                }
-            });
-        });
+        const app = new TaskFlowApp();
+
+        // Global functions for onclick handlers (needed for HTML onclick attributes)
+        function addTask(): void {
+            app.addTask();
+        }
+
+        function deleteTask(taskId: number): void {
+            app.deleteTask(taskId);
+        }
     </script>
 </body>
 </html>
-
-
