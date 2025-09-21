@@ -14,8 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #fa9b1e 0%, #f3632a 100%);
-            background-size: cover;
+            background:radial-gradient(circle at top left, #2baffc, #5df4ff);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -29,7 +28,7 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(80, 97, 99, 0.1);
             padding: 40px;
             width: 100%;
             max-width: 450px;
@@ -44,12 +43,13 @@
         }
 
         .logo {
-            color: #f8a840;
+            color: #40f2f8;
             font-size: 2.5em;
             font-weight: bold;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #ffd45d, #fc892b);
+            background: linear-gradient(135deg, #5df4ff, #2baffc);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -87,7 +87,7 @@
 
         input:focus, select:focus {
             outline: none;
-            border-color: #ffa33a;
+            border-color: #5df4ff;
             box-shadow: 0 0 0 3px rgba(255, 163, 58, 0.1);
             transform: translateY(-2px);
         }
@@ -95,7 +95,7 @@
         .btn-primary {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #ffad42, #fdab13);
+            background: linear-gradient(135deg, #42d9ff, #2baffc);
             color: white;
             border: none;
             border-radius: 12px;
@@ -108,7 +108,7 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 173, 66, 0.3);
+            box-shadow: 0 10px 25px rgba(64, 217, 255, 0.3);
         }
 
         .btn-secondary {
@@ -145,7 +145,7 @@
             margin: 10px 0;
             padding: 15px 20px;
             border-radius: 10px;
-            border-left: 4px solid #fdb836;
+            border-left: 4px solid #42d9ff;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -165,6 +165,11 @@
             text-align: left;
         }
 
+        .overdue {
+            color: #dc3545 !important;
+            font-weight: 600;
+        }
+
         .empty-state {
             color: #666;
             font-style: italic;
@@ -177,7 +182,7 @@
         .add-event-section {
             margin-bottom: 30px;
             padding: 20px;
-            background: rgba(255, 173, 66, 0.05);
+            background: rgba(0, 121, 202, 0.05);
             border-radius: 15px;
             border: 1px solid rgba(255, 173, 66, 0.1);
         }
@@ -185,7 +190,7 @@
         .edit-event-section {
             margin-bottom: 30px;
             padding: 20px;
-            background: rgba(255, 173, 66, 0.05);
+            background: rgba(0, 121, 202, 0.05);
             border-radius: 15px;
             border: 1px solid rgba(255, 173, 66, 0.1);
         }
@@ -238,45 +243,48 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/5.2.2/typescript.min.js"></script>
-    <script type="text/typescript">
-        // Define TypeScript interfaces
-        interface Task {
-            id: number;
-            name: string;
-            date: string;
-            createdAt: Date;
-            completed?: boolean;
-        }
+    <script>
+        /**
+         * @typedef {Object} Task
+         * @property {number} id - Unique task identifier
+         * @property {string} name - Task name
+         * @property {string} date - Scheduled date (YYYY-MM-DD)
+         * @property {Date} createdAt - Creation timestamp
+         * @property {boolean} completed - Task completion status
+         */
 
-        interface TaskManager {
-            tasks: Task[];
-            currentUser: string | null;
-            nextId: number;
-        }
-
-        // Initialize task manager with proper typing
-        class TaskFlowApp implements TaskManager {
-            public tasks: Task[] = [];
-            public currentUser: string | null = null;
-            public nextId: number = 1;
-
+        /**
+         * Task Management Application Class
+         */
+        class TaskFlowApp {
             constructor() {
+                /** @type {Task[]} */
+                this.tasks = [];
+                
+                /** @type {string|null} */
+                this.currentUser = null;
+                
+                /** @type {number} */
+                this.nextId = 1;
+                
                 this.initializeApp();
             }
 
-            // Add task with proper type checking
-            public addTask(): void {
-                const taskNameElement = document.getElementById("taskName") as HTMLInputElement;
-                const taskDateElement = document.getElementById("taskDate") as HTMLInputElement;
+            /**
+             * Add a new task
+             * @returns {void}
+             */
+            addTask() {
+                const taskNameElement = document.getElementById("taskName");
+                const taskDateElement = document.getElementById("taskDate");
                 
                 if (!taskNameElement || !taskDateElement) {
                     console.error("Required elements not found");
                     return;
                 }
 
-                const taskName: string = taskNameElement.value.trim();
-                const taskDate: string = taskDateElement.value.trim();
+                const taskName = taskNameElement.value.trim();
+                const taskDate = taskDateElement.value.trim();
                 
                 // Validate inputs
                 if (!this.validateTaskInput(taskName, taskDate)) {
@@ -290,7 +298,8 @@
                 }
 
                 // Create new task
-                const newTask: Task = {
+                /** @type {Task} */
+                const newTask = {
                     id: this.nextId++,
                     name: taskName,
                     date: taskDate,
@@ -301,10 +310,17 @@
                 this.tasks.push(newTask);
                 this.displayTasks();
                 this.clearInputFields();
+                
+                console.log(`Task created: ${taskName} - ${taskDate}`);
             }
 
-            // Validate task input with type safety
-            private validateTaskInput(name: string, date: string): boolean {
+            /**
+             * Validate task input
+             * @param {string} name - Task name
+             * @param {string} date - Task date
+             * @returns {boolean} - Validation result
+             */
+            validateTaskInput(name, date) {
                 if (!name) {
                     alert("Please enter a task name.");
                     return false;
@@ -328,14 +344,21 @@
                 return true;
             }
 
-            // Check for duplicate tasks
-            private isDuplicateTask(name: string): boolean {
-                return this.tasks.some((task: Task) => task.name.toLowerCase() === name.toLowerCase());
+            /**
+             * Check for duplicate tasks
+             * @param {string} name - Task name to check
+             * @returns {boolean} - True if duplicate exists
+             */
+            isDuplicateTask(name) {
+                return this.tasks.some(task => task.name.toLowerCase() === name.toLowerCase());
             }
 
-            // Display tasks with proper DOM manipulation
-            public displayTasks(): void {
-                const listElement = document.getElementById("adminTaskList") as HTMLUListElement;
+            /**
+             * Display all tasks in the UI
+             * @returns {void}
+             */
+            displayTasks() {
+                const listElement = document.getElementById("adminTaskList");
                 
                 if (!listElement) {
                     console.error("Task list element not found");
@@ -350,22 +373,22 @@
                 listElement.innerHTML = "";
                 
                 // Sort tasks by date
-                const sortedTasks: Task[] = [...this.tasks].sort((a, b) => 
+                const sortedTasks = [...this.tasks].sort((a, b) => 
                     new Date(a.date).getTime() - new Date(b.date).getTime()
                 );
 
-                sortedTasks.forEach((task: Task) => {
-                    const listItem: HTMLLIElement = document.createElement('li');
+                sortedTasks.forEach(task => {
+                    const listItem = document.createElement('li');
                     listItem.className = 'event-item';
                     
                     const formattedDate = this.formatDate(task.date);
                     const isOverdue = this.isTaskOverdue(task.date);
-                    const overdueClass = isOverdue ? ' style="color: #dc3545;"' : '';
+                    const overdueClass = isOverdue ? 'overdue' : '';
+                    const overdueText = isOverdue ? ' (Overdue)' : '';
                     
                     listItem.innerHTML = `
-                        <span class="event-name"${overdueClass}>
-                            ${this.escapeHtml(task.name)} - ${formattedDate}
-                            ${isOverdue ? ' (Overdue)' : ''}
+                        <span class="event-name ${overdueClass}">
+                            ${this.escapeHtml(task.name)} - ${formattedDate}${overdueText}
                         </span>
                         <button class="btn-secondary" onclick="app.deleteTask(${task.id})" title="Delete Task">
                             Delete
@@ -373,11 +396,17 @@
                     `;
                     listElement.appendChild(listItem);
                 });
+                
+                console.log(`Displaying ${this.tasks.length} tasks`);
             }
 
-            // Delete task with confirmation
-            public deleteTask(taskId: number): void {
-                const task = this.tasks.find((t: Task) => t.id === taskId);
+            /**
+             * Delete a task by ID
+             * @param {number} taskId - Task ID to delete
+             * @returns {void}
+             */
+            deleteTask(taskId) {
+                const task = this.tasks.find(t => t.id === taskId);
                 
                 if (!task) {
                     alert("Task not found.");
@@ -385,13 +414,18 @@
                 }
 
                 if (confirm(`Are you sure you want to delete "${task.name}"? This action cannot be undone.`)) {
-                    this.tasks = this.tasks.filter((t: Task) => t.id !== taskId);
+                    this.tasks = this.tasks.filter(t => t.id !== taskId);
                     this.displayTasks();
+                    console.log(`Task deleted: ${task.name}`);
                 }
             }
 
-            // Utility method to format date
-            private formatDate(dateString: string): string {
+            /**
+             * Format date for display
+             * @param {string} dateString - Date string (YYYY-MM-DD)
+             * @returns {string} - Formatted date
+             */
+            formatDate(dateString) {
                 const date = new Date(dateString);
                 return date.toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -400,8 +434,12 @@
                 });
             }
 
-            // Check if task is overdue
-            private isTaskOverdue(dateString: string): boolean {
+            /**
+             * Check if task is overdue
+             * @param {string} dateString - Date string (YYYY-MM-DD)
+             * @returns {boolean} - True if overdue
+             */
+            isTaskOverdue(dateString) {
                 const taskDate = new Date(dateString);
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -410,37 +448,58 @@
                 return taskDate < today;
             }
 
-            // Clear input fields
-            private clearInputFields(): void {
-                const taskNameElement = document.getElementById("taskName") as HTMLInputElement;
-                const taskDateElement = document.getElementById("taskDate") as HTMLInputElement;
+            /**
+             * Clear input fields
+             * @returns {void}
+             */
+            clearInputFields() {
+                const taskNameElement = document.getElementById("taskName");
+                const taskDateElement = document.getElementById("taskDate");
                 
                 if (taskNameElement) taskNameElement.value = "";
                 if (taskDateElement) taskDateElement.value = "";
             }
 
-            // Escape HTML for security
-            private escapeHtml(text: string): string {
+            /**
+             * Escape HTML for security
+             * @param {string} text - Text to escape
+             * @returns {string} - Escaped HTML
+             */
+            escapeHtml(text) {
                 const div = document.createElement('div');
                 div.textContent = text;
                 return div.innerHTML;
             }
 
-            // Initialize event listeners
-            private initializeApp(): void {
-                document.addEventListener('DOMContentLoaded', () => {
-                    this.displayTasks();
-                    this.setupEventListeners();
-                });
+            /**
+             * Initialize the application
+             * @returns {void}
+             */
+            initializeApp() {
+                // Setup immediately since DOM is ready when class is instantiated
+                this.setupApp();
             }
 
-            // Setup event listeners with proper typing
-            private setupEventListeners(): void {
-                const taskNameElement = document.getElementById('taskName') as HTMLInputElement;
-                const taskDateElement = document.getElementById('taskDate') as HTMLInputElement;
+            /**
+             * Setup the application
+             * @returns {void}
+             */
+            setupApp() {
+                this.displayTasks();
+                this.setupEventListeners();
+                console.log('TaskFlow class initialized - ready to manage tasks!');
+            }
+
+            /**
+             * Setup event listeners
+             * @returns {void}
+             */
+            setupEventListeners() {
+                const taskNameElement = document.getElementById('taskName');
+                const taskDateElement = document.getElementById('taskDate');
                 
                 if (taskNameElement) {
-                    taskNameElement.addEventListener('keypress', (e: KeyboardEvent) => {
+                    taskNameElement.addEventListener('keypress', (e) => {
                         if (e.key === 'Enter') {
                             this.addTask();
                         }
@@ -448,7 +507,7 @@
                 }
                 
                 if (taskDateElement) {
-                    taskDateElement.addEventListener('keypress', (e: KeyboardEvent) => {
+                    taskDateElement.addEventListener('keypress', (e) => {
                         if (e.key === 'Enter') {
                             this.addTask();
                         }
@@ -456,8 +515,11 @@
                 }
             }
 
-            // Get task statistics
-            public getTaskStats(): { total: number; overdue: number; upcoming: number } {
+            /**
+             * Get task statistics
+             * @returns {{total: number, overdue: number, upcoming: number}} - Task statistics
+             */
+            getTaskStats() {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
@@ -469,16 +531,37 @@
             }
         }
 
-        // Initialize the application
-        const app = new TaskFlowApp();
+        // Global variables
+        let app = null;
 
-        // Global functions for onclick handlers (needed for HTML onclick attributes)
-        function addTask(): void {
-            app.addTask();
+        // Global functions for onclick handlers
+        function addTask() {
+            if (app) {
+                app.addTask();
+            } else {
+                console.error('App not initialized yet');
+            }
         }
 
-        function deleteTask(taskId: number): void {
-            app.deleteTask(taskId);
+        function deleteTask(taskId) {
+            if (app) {
+                app.deleteTask(taskId);
+            } else {
+                console.error('App not initialized yet');
+            }
+        }
+
+        // Initialize the application when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+
+        function initializeApp() {
+            app = new TaskFlowApp();
+            window.taskApp = app; // Make app globally accessible for debugging
+            console.log('TaskFlow initialized and ready!');
         }
     </script>
 </body>
